@@ -1,37 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ChakraProvider,
   Box,
-  Text,
-  Link,
   VStack,
-  Code,
   Grid,
   theme,
 } from '@chakra-ui/react';
 import { ColorModeSwitcher } from './ColorModeSwitcher';
-import { Logo } from './Logo';
+import axios from 'axios';
+
 
 function App() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    axios.get('https://www.grupofortune.com.br/integracao/softwareexpress/atualizacao/portal/api-consulta-historico.php')
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
   return (
     <ChakraProvider theme={theme}>
-      <Box textAlign="center" fontSize="xl">
+      <Box fontSize="xl">
         <Grid minH="100vh" p={3}>
           <ColorModeSwitcher justifySelf="flex-end" />
           <VStack spacing={8}>
-            <Logo h="40vmin" pointerEvents="none" />
-            <Text>
-              Edit <Code fontSize="xl">src/App.js</Code> and save to reload.
-            </Text>
-            <Link
-              color="teal.500"
-              href="https://chakra-ui.com"
-              fontSize="2xl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn Chakra
-            </Link>
+           {data?.map((item) => (
+              <div key={item.historico_id}>
+                <p>{item.historico_id}</p>
+                <p>{item.historico_nome}</p>
+                <p>{item.dia_semana}</p>
+              </div>
+            ))}
           </VStack>
         </Grid>
       </Box>
